@@ -1,1 +1,6 @@
-flask-gcp/
+*.tfstate
+*.tfstate.backup
+.terraform/
+terraform.tfvars
+*.json
+
