@@ -47,9 +47,9 @@ resource "google_compute_instance" "vm_instance" {
     ssh-keys = "${var.ssh_user}:${file(var.ssh_public_key_path)}"
   }
 
-  depends_on = [
-    google_compute_firewall.allow-ssh
-  ]
+  # depends_on = [
+  #   google_compute_firewall.allow-ssh
+  # ]
 
   metadata_startup_script = <<-EOT
     #!/bin/bash
