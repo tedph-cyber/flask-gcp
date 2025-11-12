@@ -44,7 +44,7 @@ resource "google_compute_instance" "flask_instance" {
 
   metadata_startup_script = <<-EOT
     #!/bin/bash
-    echo 'Hello from Terraform via GitHub Actions with SSH enabled!' > /var/www/html/index.html
+    echo 'Hello from Terraform via GitHub Actions with SSH enabled! I just try boss!' > /var/www/html/index.html
   EOT
 }
 
