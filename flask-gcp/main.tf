@@ -1,4 +1,4 @@
-resource "google_compute_network" "default" {
+data "google_compute_network" "default" {
   name = "default"
 }
 
