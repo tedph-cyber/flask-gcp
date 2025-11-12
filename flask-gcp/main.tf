@@ -21,7 +21,7 @@ resource "google_compute_firewall" "allow_ssh" {
 }
 
 # Create a compute instance with SSH access
-resource "google_compute_instance" "vm_instance" {
+data "google_compute_instance" "vm_instance" {
   name         = "tf-vm"
   machine_type = "e2-micro"
   zone         = "us-central1-a"
