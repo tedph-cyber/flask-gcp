@@ -12,6 +12,6 @@ provider "google" {
   project = "terahform"
   region = "us-central-1"
   zone = "us-central1-a"
-  credentials = jsondecode(base64decode(var.gcp_credentials))
+  credentials = var.gcp_credentials
 
 }
