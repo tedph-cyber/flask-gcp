@@ -21,8 +21,8 @@ resource "google_compute_firewall" "allow_ssh" {
 }
 
 # Create a compute instance with SSH access
-data "google_compute_instance" "vm_instance" {
-  name         = "tf-vm"
+resource "google_compute_instance" "flask_instance" {
+  name         = "flask-vm"
   machine_type = "e2-micro"
   zone         = "us-central1-a"
   tags         = ["ssh-allowed"]
