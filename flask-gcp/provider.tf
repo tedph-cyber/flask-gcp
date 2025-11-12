@@ -15,7 +15,3 @@ provider "google" {
   credentials = var.gcp_credentials
 }
 
-backend "gcs" {
-  bucket = "tedahform"
-  prefix = "flaskform/terraform-state"
-}
