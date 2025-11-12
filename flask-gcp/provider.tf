@@ -13,5 +13,9 @@ provider "google" {
   region = "us-central-1"
   zone = "us-central1-a"
   credentials = var.gcp_credentials
+}
 
+backend "gcs" {
+  bucket = "tedahform"
+  prefix = "flaskform/terraform-state"
 }
