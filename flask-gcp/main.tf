@@ -2,6 +2,11 @@ resource "google_compute_network" "default" {
   name = "default"
 }
 
+data "google_compute_subnetwork" "flask-sub" {
+  name   = "flask-sub"
+  region = "us-central1"
+}
+
 # Allow SSH ingress on the default network
 resource "google_compute_firewall" "allow_ssh" {
   name    = "allow-ssh"
@@ -14,6 +19,10 @@ resource "google_compute_firewall" "allow_ssh" {
 
   source_ranges = ["0.0.0.0/0"] # You can restrict this later
   target_tags   = ["ssh-allowed"]
+
+  depends_on = [
+    google_compute_network.default
+  ]
 }
 
 # Create a compute instance with SSH access
@@ -36,7 +45,11 @@ resource "google_compute_instance" "vm_instance" {
 
   metadata = {
     ssh-keys = "${var.ssh_user}:${file(var.ssh_public_key_path)}"
-}
+  }
+
+  depends_on = [
+    google_compute_firewall.allow-ssh
+  ]
 
   metadata_startup_script = <<-EOT
     #!/bin/bash
