@@ -1,0 +1,51 @@
+name: Terraform GCP Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: Terraform Plan & Apply
+    runs-on: ubuntu-latest
+
+    env:
+      TF_VAR_gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
+      TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
+      TF_VAR_region: ${{ secrets.GCP_REGION }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan
+
+      - name: Output VM IP Address
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          EXTERNAL_IP=$(terraform output -raw google_compute_instance_vm_instance_ip 2>/dev/null || true)
+          if [ -z "$EXTERNAL_IP" ]; then
+            EXTERNAL_IP=$(terraform show -json | jq -r '.values.root_module.resources[] | select(.address=="google_compute_instance.vm_instance") | .values.network_interface[0].access_config[0].nat_ip')
+          fi
+          echo "✅ VM External IP: $EXTERNAL_IP"
+
