@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    working-directory: flask-gcp
+
 jobs:
   terraform:
     name: Terraform Plan & Apply
@@ -22,13 +26,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # - name: focus directory
+      #   run: cd flask-gcp
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.9.5
-
-      - name: focus directory
-        run: cd flask-gcp
 
       - name: Terraform Init
         run: terraform init
