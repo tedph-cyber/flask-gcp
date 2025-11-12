@@ -4,3 +4,5 @@
 terraform.tfvars
 *.json
 
+*.json
+Dockerfile
