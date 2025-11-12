@@ -16,7 +16,7 @@ resource "google_compute_firewall" "allow_ssh" {
   target_tags   = ["ssh-allowed"]
 
   depends_on = [
-    google_compute_network.default
+    data.google_compute_network.default.name
   ]
 }
 
