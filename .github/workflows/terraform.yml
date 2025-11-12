@@ -26,13 +26,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # - name: focus directory
-      #   run: cd flask-gcp
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.9.5
+
+      - name: Write SSH public key
+        run: |
+          mkdir -p /tmp/ssh
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > /tmp/ssh/id_rsa.pub
 
       - name: Terraform Init
         run: terraform init
@@ -55,4 +57,5 @@ jobs:
             EXTERNAL_IP=$(terraform show -json | jq -r '.values.root_module.resources[] | select(.address=="google_compute_instance.vm_instance") | .values.network_interface[0].access_config[0].nat_ip')
           fi
           echo "✅ VM External IP: $EXTERNAL_IP"
+
 
