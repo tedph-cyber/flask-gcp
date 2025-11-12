@@ -1,3 +1,7 @@
+resource "google_compute_network" "default" {
+  name = "default"
+}
+
 # Allow SSH ingress on the default network
 resource "google_compute_firewall" "allow_ssh" {
   name    = "allow-ssh"
