@@ -5,8 +5,8 @@ data "google_compute_network" "default" {
 # Allow SSH ingress on the default network
 resource "google_compute_firewall" "allow_ssh" {
   name    = "allow-ssh"
-  network = "default"
-
+  network = data.google_compute_network.default.name
+  
   allow {
     protocol = "tcp"
     ports    = ["22"]
