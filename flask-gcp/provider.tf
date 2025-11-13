@@ -5,6 +5,12 @@ terraform {
       version = "7.10.0"
     }
   }
+
+  backend "gcs" {
+    bucket = "tedahform"
+    key = "state"
+    region = "us-central-1"
+  }
 }
 
 provider "google" {
