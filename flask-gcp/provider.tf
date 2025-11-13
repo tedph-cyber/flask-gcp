@@ -9,7 +9,7 @@ terraform {
   backend "gcs" {
     bucket = "tedahform"
     # key = "state"
-    region = "us-central-1"
+    # region = "us-central-1"
   }
 }
 
