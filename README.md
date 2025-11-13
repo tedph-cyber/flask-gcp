@@ -20,16 +20,6 @@ All infrastructure changes — from creation to destruction — are managed dire
 
 ## 🗂️ Project Structure
 
-.
-├── main.tf # Main Terraform configuration (VM + firewall)
-├── provider.tf # GCP provider + credentials setup
-├── variables.tf # Variable definitions
-├── .github/
-│ └── workflows/
-│ ├── terraform.yml # Auto plan/apply workflow
-│ └── terraform-destroy.yml# Manual destroy workflow
-└── .gitignore # Ignored Terraform and secret files
-
 
 ---
 
