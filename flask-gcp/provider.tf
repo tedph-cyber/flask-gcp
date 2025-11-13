@@ -10,6 +10,7 @@ terraform {
     bucket = "tedahform"
     # key = "state"
     # region = "us-central-1"
+    prefix = "flaskform"
   }
 }
 
