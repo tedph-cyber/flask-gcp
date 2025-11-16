@@ -39,6 +39,12 @@ resource "google_compute_instance" "flask_instance" {
     access_config {} # gives external IP
   }
 
+  label = {
+    environment = var.environment
+    project = var.project_id
+    owner = var.ssh_user
+  }
+
   metadata = {
     ssh-keys = "${var.ssh_user}:${file(var.ssh_public_key_path)}"
   }

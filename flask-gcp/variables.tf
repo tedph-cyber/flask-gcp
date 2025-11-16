@@ -39,3 +39,7 @@ variable "tag" {
 variable "credentials_json" {
    description = "credentials to auth into GCR"
 }
+
+variable "environment" {
+   default =   terraform.workspace
+ }

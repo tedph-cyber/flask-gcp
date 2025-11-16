@@ -23,6 +23,7 @@ jobs:
       TF_VAR_region: ${{ secrets.GCP_REGION }}
       TF_VAR_image_name: "flask-gcp"
       TF_VAR_tag: "latest"
+      TF_WORKSPACE: dev
 
     steps:
       - name: Checkout code
@@ -49,6 +50,10 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Create and select workspace
+        run: |
+          terraform workspace select $TF_WORKSPACE || terraform workspace new $TF_WORKSPACE
+        
       - name: Terraform Validate
         run: terraform validate
 
