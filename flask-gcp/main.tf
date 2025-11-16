@@ -60,12 +60,12 @@ resource "google_compute_instance" "flask_instance" {
     systemctl start docker
 
     # Authenticate GCR
-    echo "${credentials}" > /root/key.json
+    echo "$${gcp_credentials}" > /root/key.json
     gcloud auth activate-service-account --key-file=/root/key.json
     gcloud auth configure-docker -q
 
     # Pull image from GCR
-    docker pull gcr.io/${project_id}/${image_name}:${tag}
+    docker pull gcr.io/$${project_id}/$${image_name}:$${tag}
 
     # Stop any old container
     docker rm -f myapp || true
