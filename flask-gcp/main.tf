@@ -39,7 +39,7 @@ resource "google_compute_instance" "flask_instance" {
     access_config {} # gives external IP
   }
 
-  label = {
+  labels = {
     environment = terraform.workspace
     project = var.project_id
     owner = var.ssh_user
@@ -49,5 +49,7 @@ resource "google_compute_instance" "flask_instance" {
     ssh-keys = "${var.ssh_user}:${file(var.ssh_public_key_path)}"
   }
 
-  metadata_startup_script = templatefile("startup.sh.tftpl", {})
+  metadata_startup_script = templatefile("startup.sh.tftpl", {
+    ssh_user = var.ssh_user
+  })
 }
