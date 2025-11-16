@@ -1,0 +1,101 @@
+#!/bin/bash
+# ----------------------------------------------------------------------
+# startup.sh.tftpl – Debian 11 (Bullseye) startup script
+# Runs on first boot via metadata_startup_script
+# ----------------------------------------------------------------------
+set -euo pipefail
+
+# Redirect all output to log for debugging
+exec > /var/log/startup.log 2>&1
+echo "=== STARTUP BEGIN: $(date) ==="
+
+# ----------------------------------------------------------------------
+# 1. Update & install basics
+# ----------------------------------------------------------------------
+apt-get update -y
+apt-get install -y ca-certificates curl gnupg lsb-release apache2 ufw
+
+# ----------------------------------------------------------------------
+# 2. Install Docker from Docker's official repo (not docker.io)
+# ----------------------------------------------------------------------
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg \
+  | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+   https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
+  | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+apt-get update -y
+apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin
+
+systemctl enable docker
+systemctl start docker
+
+# ----------------------------------------------------------------------
+# 3. Write GCP credentials + authenticate
+# ----------------------------------------------------------------------
+echo "$${GCP_CREDENTIALS}" > /root/key.json
+chmod 400 /root/key.json
+export GOOGLE_APPLICATION_CREDENTIALS=/root/key.json
+
+gcloud auth activate-service-account --key-file=/root/key.json --quiet
+gcloud auth configure-docker --quiet
+
+# ----------------------------------------------------------------------
+# 4. Pull your Flask image from GCR
+# ----------------------------------------------------------------------
+FULL_IMAGE="gcr.io/$${GCP_PROJECT_ID}/$${IMAGE_NAME}:$${IMAGE_TAG}"
+echo "Pulling image: $FULL_IMAGE"
+docker pull "$FULL_IMAGE"
+
+# ----------------------------------------------------------------------
+# 5. Stop old container (idempotent)
+# ----------------------------------------------------------------------
+docker rm -f myapp || true
+
+# ----------------------------------------------------------------------
+# 6. Run Flask container on port 5000
+# ----------------------------------------------------------------------
+docker run -d \
+  --name myapp \
+  -p 5000:5000 \
+  --restart unless-stopped \
+  "$FULL_IMAGE"
+
+# ----------------------------------------------------------------------
+# 7. Serve a simple homepage on port 80 (Apache)
+# ----------------------------------------------------------------------
+systemctl enable apache2
+systemctl start apache2
+
+cat > /var/www/html/index.html <<'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Flask VM – Powered by Terraform</title>
+  <style>
+    body { font-family: system-ui, sans-serif; text-align: center; margin-top: 4rem; }
+    a { color: #1a73e8; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>Hello from Debian + Terraform + GitHub Actions!</h1>
+  <p>Your Flask app is live at: <a href="http://$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip -H 'Metadata-Flavor: Google'):5000">port 5000</a></p>
+  <p>SSH in with: <code>ssh ${ssh_user}@$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip -H 'Metadata-Flavor: Google')</code></p>
+  <p><small>Startup log: <code>/var/log/startup.log</code></small></p>
+</body>
+</html>
+EOF
+
+# ----------------------------------------------------------------------
+# 8. Open firewall ports (ufw – safe on Debian)
+# ----------------------------------------------------------------------
+ufw allow 22   || true   # SSH
+ufw allow 80   || true   # Apache
+ufw allow 5000 || true   # Flask
+ufw --force enable || true
+
+echo "=== STARTUP COMPLETE: $(date) ==="

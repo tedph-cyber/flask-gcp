@@ -10,7 +10,7 @@ resource "google_compute_firewall" "allow_ssh" {
   
   allow {
     protocol = "tcp"
-    ports    = ["22"]
+    ports    = ["22", "80", "5000"]
   }
 
   source_ranges = ["0.0.0.0/0"] # You can restrict this later
@@ -49,32 +49,5 @@ resource "google_compute_instance" "flask_instance" {
     ssh-keys = "${var.ssh_user}:${file(var.ssh_public_key_path)}"
   }
 
-  metadata_startup_script = <<-EOT
-    #!/bin/bash
-    apt-get update -y
-    apt-get install -y ca-certificates curl gnupg lsb-release
-
-    # Install Docker
-    apt-get install -y docker.io
-    systemctl enable docker
-    systemctl start docker
-
-    # Authenticate GCR
-    echo "$${gcp_credentials}" > /root/key.json
-    gcloud auth activate-service-account --key-file=/root/key.json
-    gcloud auth configure-docker -q
-
-    # Pull image from GCR
-    docker pull gcr.io/$${project_id}/$${image_name}:$${tag}
-
-    # Stop any old container
-    docker rm -f myapp || true
-
-    # Run container
-    docker run -d -p 5000:5000 --name myapp gcr.io/${project_id}/${image_name}:${tag}
-
-    # homepage?
-    echo 'Hello from Terraform via GitHub Actions with SSH enabled! I just try boss!' > /var/www/html/index.html
-  EOT
+  metadata_startup_script = templatefile("startup.sh.tftpl", {})
 }
-
