@@ -40,7 +40,7 @@ resource "google_compute_instance" "flask_instance" {
   }
 
   label = {
-    environment = terraform.workspace == "default" ? "dev" : terraform.workspace 
+    environment = terraform.workspace
     project = var.project_id
     owner = var.ssh_user
   }
