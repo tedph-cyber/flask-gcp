@@ -1,3 +1,4 @@
+# import/use exisiting network
 data "google_compute_network" "default" {
   name = "default"
 }
@@ -44,6 +45,29 @@ resource "google_compute_instance" "flask_instance" {
 
   metadata_startup_script = <<-EOT
     #!/bin/bash
+    apt-get update -y
+    apt-get install -y ca-certificates curl gnupg lsb-release
+
+    # Install Docker
+    apt-get install -y docker.io
+    systemctl enable docker
+    systemctl start docker
+
+    # Authenticate GCR
+    echo "${credentials}" > /root/key.json
+    gcloud auth activate-service-account --key-file=/root/key.json
+    gcloud auth configure-docker -q
+
+    # Pull image from GCR
+    docker pull gcr.io/${project_id}/${image_name}:${tag}
+
+    # Stop any old container
+    docker rm -f myapp || true
+
+    # Run container
+    docker run -d -p 5000:5000 --name myapp gcr.io/${project_id}/${image_name}:${tag}
+
+    # homepage?
     echo 'Hello from Terraform via GitHub Actions with SSH enabled! I just try boss!' > /var/www/html/index.html
   EOT
 }

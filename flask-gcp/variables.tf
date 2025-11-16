@@ -26,3 +26,16 @@ variable "ssh_public_key_path" {
   default     = "/tmp/ssh/id_rsa.pub"
 }
 
+variable "image_name" {
+  description = "Docker image name"
+  type = string
+  default = "flask-gcp"
+}
+
+variable "tag" {
+  default = "latest"
+}
+
+variable "credentials_json" {
+   description = "credentials to auth into GCR"
+}
