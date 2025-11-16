@@ -41,5 +41,6 @@ variable "credentials_json" {
 }
 
 variable "environment" {
-   default =   terraform.workspace
+  type = string
+  description = "Deployment environment"
  }
