@@ -2,8 +2,9 @@ name: Terraform GCP Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [ dev, prod ]
   pull_request:
+    branches: [ main, dev, prod ]
 
 permissions:
   contents: read
@@ -21,7 +22,6 @@ jobs:
       TF_VAR_gcp_credentials: ${{ secrets.GCP_CREDENTIALS }}
       TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
       TF_VAR_region: ${{ secrets.GCP_REGION }}
-      TF_WORKSPACE: ${{ env.TF_WORKSPACE }}
 
     steps:
       - name: Checkout code
