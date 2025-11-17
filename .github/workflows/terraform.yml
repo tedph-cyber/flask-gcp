@@ -79,11 +79,11 @@ jobs:
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve tfplan
 
       - name: Output VM IP Address
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
           EXTERNAL_IP=$(terraform output -raw vm_external_ip 2>/dev/null || true)
           if [ -z "$EXTERNAL_IP" ]; then
