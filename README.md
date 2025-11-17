@@ -19,7 +19,18 @@ All infrastructure changes — from creation to destruction — are managed dire
 ---
 
 ## 🗂️ Project Structure
-
+.
+├── app.py
+├── Dockerfile
+├── flaskform.json
+├── flask-gcp
+│   ├── main.tf
+│   ├── outputs.tf
+│   ├── provider.tf
+│   ├── startup.sh.tftpl
+│   └── variables.tf
+├── README.md
+└── requirements.txt
 
 ---
 
