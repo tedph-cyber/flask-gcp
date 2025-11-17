@@ -78,4 +78,10 @@ jobs:
           fi
           echo "✅ VM External IP: $EXTERNAL_IP"
 
-
+      # This runs even if the job fails or is cancelled
+      - name: Release state lock on exit
+        if: always()
+        run: |
+          echo "Releasing any remaining lock..."
+          terraform state lock list 2>/dev/null || true
+        continue-on-error: true
