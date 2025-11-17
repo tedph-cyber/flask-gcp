@@ -2,8 +2,9 @@ name: Terraform GCP Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [ dev, prod ]
   pull_request:
+    branches: [ main, dev, prod ]
 
 permissions:
   contents: read
@@ -55,7 +56,21 @@ jobs:
           echo "${{ secrets.SSH_PUBLIC_KEY }}" > /tmp/ssh/id_rsa.pub
 
       - name: Terraform Init
-        run: terraform init
+        env:
+          TF_WORKSPACE: ${{ steps.workspace.outputs.workspace }}
+        run: |
+          terraform init \
+            -backend-config="bucket=tedahform" \
+            -backend-config="prefix=flaskform/${{ steps.workspace.outputs.workspace }}"
+
+      # - name: Release locked state
+      #   run: terraform force-unlock -force 1763327065283774
+      #
+      # - name: Remove orphaned lock (first-time or stale)
+      #   run: |
+      #     LOCK_ID="1763369665691148"
+      #     terraform force-unlock "$LOCK_ID" <<< "yes" || echo "No stale lock or already gone"
+      #   continue-on-error: true
 
       - name: Terraform Validate
         run: terraform validate
