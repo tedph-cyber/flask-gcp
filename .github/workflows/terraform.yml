@@ -61,8 +61,8 @@ jobs:
             -backend-config="bucket=tedahform" \
             -backend-config="prefix=flaskform/${{ steps.workspace.outputs.workspace }}"
 
-      - name: Release locked state
-        run: terraform force-unlock -force 1763327065283774
+      # - name: Release locked state
+      #   run: terraform force-unlock -force 1763327065283774
 
       - name: Terraform Validate
         run: terraform validate
