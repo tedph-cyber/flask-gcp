@@ -4,3 +4,7 @@ output "vm_external_ip" {
   sensitive   = false
 }
 
+output "environment" {
+   value = local.environment
+   description = "To specify the environment in action atm"
+}
