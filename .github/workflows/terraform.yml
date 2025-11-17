@@ -31,6 +31,8 @@ jobs:
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
             echo "TF_WORKSPACE=prod" >> $GITHUB_ENV
+          if [[ "${{ github.ref }}" == "refs/heads/staging" ]] then
+            echo "TF_WORKSPACE=staging" >> $GITHUB_ENV
           else
             echo "TF_WORKSPACE=dev" >> $GITHUB_ENV
           fi
