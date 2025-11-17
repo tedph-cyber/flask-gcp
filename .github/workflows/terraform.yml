@@ -48,9 +48,6 @@ jobs:
         with:
           terraform_version: 1.9.5
 
-      - name: unlock lock 
-        run: terraform force-unlock -force 1763327065283774
-
       - name: Write SSH public key
         run: |
           mkdir -p /tmp/ssh
@@ -63,6 +60,9 @@ jobs:
           terraform init \
             -backend-config="bucket=tedahform" \
             -backend-config="prefix=flaskform/${{ steps.workspace.outputs.workspace }}"
+
+      - name: Release locked state
+        run: terraform force-unlock -force 1763327065283774
 
       - name: Terraform Validate
         run: terraform validate
