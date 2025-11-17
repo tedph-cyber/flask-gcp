@@ -29,7 +29,7 @@ resource "google_compute_firewall" "allow_ssh" {
   source_ranges = ["0.0.0.0/0"]  # Restrict this in prod!
   target_tags   = ["ssh-allowed-${local.environment}"]
 
-  labels = local.common_labels
+  # labels = local.common_labels
 }
 
 # VM instance – different name & tags per workspace
