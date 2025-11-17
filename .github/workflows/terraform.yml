@@ -61,14 +61,14 @@ jobs:
             -backend-config="bucket=tedahform" \
             -backend-config="prefix=flaskform/${{ steps.workspace.outputs.workspace }}"
 
-      - name: Release locked state
-        run: terraform force-unlock -force 1763327065283774
-
-      - name: Remove orphaned lock (first-time or stale)
-        run: |
-          LOCK_ID="1763369665691148"
-          terraform force-unlock "$LOCK_ID" <<< "yes" || echo "No stale lock or already gone"
-        continue-on-error: true
+      # - name: Release locked state
+      #   run: terraform force-unlock -force 1763327065283774
+      #
+      # - name: Remove orphaned lock (first-time or stale)
+      #   run: |
+      #     LOCK_ID="1763369665691148"
+      #     terraform force-unlock "$LOCK_ID" <<< "yes" || echo "No stale lock or already gone"
+      #   continue-on-error: true
 
       - name: Terraform Validate
         run: terraform validate
